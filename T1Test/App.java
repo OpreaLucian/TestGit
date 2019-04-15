@@ -34,84 +34,112 @@ public class App
 	
     public static void main( String[] args )
     {
-    	try {
+    	String[] ListOfSites = {"eurosibimobiliare"};
+    	
+    	for(String site:ListOfSites)
+    	{
+    		FindRangForSelectedSite(site);
+    	}    
+    }
+    
+	private static void FindRangForSelectedSite(String site) {
+		try 
+		{
     		String[] searchWordsList = {"garsoniera sibiu", "apartamente de vanzare sibiu"};
-    		String searchSite = "eurosibimobiliare";
+    		int siteRang = 0;
     		JSONObject json = new JSONObject();
     		JSONArray arrayElementOneArray = new JSONArray();
     		
     		for(String searchWord:searchWordsList)
     		{
-	    		String url = PART_NEXT_PAGE_LINK + searchWord;
-	    		Integer rang = 0;
+    			siteRang = GetRangByWork(searchWord, site);
 	    		
-	    		List<String> links;
-	    	    Document htmlDocument;
-	    		int statusCode;
-	    		int index;
-	    		
-	    		googlePagesLinks = new LinkedList<String>();
-	    		googleResultsLinks = new LinkedList<String>();
-	    		
-	    		Connection connection = Jsoup.connect(url).userAgent(USER_AGENT);
-	    		htmlDocument = connection.get();
-	    		statusCode = connection.response().statusCode();
-	    		CheckPage(htmlDocument);
-	    		
-	    		
-	    		GetNextPageLink(htmlDocument);
-	    		googlePagesLinks = googlePagesLinks.subList(0, googlePagesLinks.size()-1);
-	    		for(String urlNextPage:googlePagesLinks)
-	    		{
-	    		    connection = Jsoup.connect(urlNextPage).userAgent(USER_AGENT);
-	    			htmlDocument = connection.get();
-	    			statusCode = connection.response().statusCode();
-	    			
-	    			CheckPage(htmlDocument);
-	    		}
-	    		
-	    		index = 1;
-	    		for(String resultLink:googleResultsLinks)
-	    		{
-	    			if(resultLink.contains(searchSite))
-	    			{
-	    				rang = index;
-	    				System.out.println(index);
-	    				break;
-	    			}
-	    			index++;
-	    		}
-	    		
-	//    		BufferedWriter writer = new BufferedWriter(new FileWriter("my.txt", true));
-	//    		
-	//    		Elements elementLinks = htmlDocument.getElementsByClass("rc");		
-	//    		Element s;
-	//    		for(Element link : elementLinks) {
-	//    			s = (Jsoup.parse(link.outerHtml().toString())).select("a").first();
-	//    			writer.append(s.attr("href")+"\n");
-	//    		}
-	//    	     
-	//    	    writer.close();
 	        	
 	    		JSONObject arrayElementOneArrayElementOne = new JSONObject();
 	    		arrayElementOneArrayElementOne.put("cuvantCheie", searchWord);
-	    		arrayElementOneArrayElementOne.put("rang", index);
+	    		arrayElementOneArrayElementOne.put("rang", siteRang);
 	    		arrayElementOneArray.add(arrayElementOneArrayElementOne);
 	    		
 	    		
 	    		
 	    		
-	    		json.put(searchSite,arrayElementOneArray);
+	    		json.put(site,arrayElementOneArray);
     		}
             System.out.print(json);
         	
-    		}
-    		catch(Exception e) {
-    			System.out.print("dasd");
-    		}
-    
-    }
-    
+		}
+		catch(Exception e) {
+			
+		}
+		
+	}
+
+	private static int GetRangByWork(String searchWord, String site){
+		
+		try
+		{
+			String url = PART_NEXT_PAGE_LINK + searchWord;
+			Integer rang = 0;
+			
+			List<String> links;
+		    Document htmlDocument;
+			int statusCode;
+			int index;
+			
+			googlePagesLinks = new LinkedList<String>();
+			googleResultsLinks = new LinkedList<String>();
+			
+			Connection connection = Jsoup.connect(url).userAgent(USER_AGENT);
+			htmlDocument = connection.get();
+			statusCode = connection.response().statusCode();
+			CheckPage(htmlDocument);
+			
+			
+			GetNextPageLink(htmlDocument);
+			googlePagesLinks = googlePagesLinks.subList(0, googlePagesLinks.size()-1);
+			for(String urlNextPage:googlePagesLinks)
+			{
+			    connection = Jsoup.connect(urlNextPage).userAgent(USER_AGENT);
+				htmlDocument = connection.get();
+				statusCode = connection.response().statusCode();
+				
+				CheckPage(htmlDocument);
+			}
+			
+			index = 1;
+			for(String resultLink:googleResultsLinks)
+			{
+				if(resultLink.contains(site))
+				{
+					rang = index;
+					System.out.println(index);
+					break;
+				}
+				index++;
+			}
+			
+			return rang;
+			
+		}
+		catch(Exception e)
+		{
+			System.out.print("Connection failed");
+		}
+		return -1;
+		
+//    		BufferedWriter writer = new BufferedWriter(new FileWriter("my.txt", true));
+//    		
+//    		Elements elementLinks = htmlDocument.getElementsByClass("rc");		
+//    		Element s;
+//    		for(Element link : elementLinks) {
+//    			s = (Jsoup.parse(link.outerHtml().toString())).select("a").first();
+//    			writer.append(s.attr("href")+"\n");
+//    		}
+//    	     
+//    	    writer.close();
+		
+	}
+
 	private static void CheckPage(Document doc) throws IOException {
 		BufferedWriter writer = new BufferedWriter(new FileWriter("my.txt", true));
 		
